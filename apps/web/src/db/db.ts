@@ -10,4 +10,10 @@ if (serverEnv.NODE_ENV !== "production") globalForDb.sqlite = sqlite;
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 
+sqlite.exec(`
+  CREATE VIRTUAL TABLE IF NOT EXISTS snippets_fts USING fts5(
+    name, use_case, body, tags, content='snippets', content_rowid='rowid'
+  );
+`);
+
 export const db = drizzle(sqlite, { schema });
