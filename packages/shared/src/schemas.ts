@@ -3,10 +3,10 @@ import { snippetKinds } from "./index.ts";
 
 export const snippetSchema = z.object({
   kind: z.enum(snippetKinds),
-  name: z.string().trim().min(1),
-  body: z.string().trim().min(1),
+  name: z.string().trim().min(1, { error: "Please enter a name." }),
+  body: z.string().trim().min(1, { error: "Please enter a snippet/prompt." }),
   language: z.string().nullish(),
-  useCase: z.string().trim().nullish().default(""),
+  useCase: z.string().trim().nullish(),
   tags: z.array(z.string()),
   pinned: z.boolean(),
 });

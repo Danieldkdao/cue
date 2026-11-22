@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { SnippetDialog } from "@/features/snippets/components/snippet-dialog";
+
 export default function Home() {
   return (
     <div className="w-full max-w-7xl mx-auto p-5">
@@ -7,6 +10,9 @@ export default function Home() {
           View, manage, sort, and search through your snippets.
         </p>
       </div>
+      <SnippetDialog>
+        <Button>Add Snippet</Button>
+      </SnippetDialog>
     </div>
   );
 }

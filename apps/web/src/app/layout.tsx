@@ -2,18 +2,9 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
-const jetbrainsMonoSans = JetBrains_Mono({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const jetbrainsMonoSerif = JetBrains_Mono({
-  variable: "--font-serif",
-  subsets: ["latin"],
-});
-
-const jetbrainsMonoMono = JetBrains_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
 });
@@ -30,14 +21,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={cn(
         "h-full",
         "antialiased",
-        jetbrainsMonoSans.variable,
-        jetbrainsMonoSerif.variable,
-        jetbrainsMonoMono.variable,
+        jetbrainsMono.variable,
         "font-sans",
         "dark",
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
