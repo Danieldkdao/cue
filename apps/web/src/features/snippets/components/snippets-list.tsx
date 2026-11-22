@@ -1,13 +1,14 @@
 "use client";
 
+import { ListError, ListLoader, Sentinel } from "@/components/list-components";
+import { TextState } from "@/components/text-state";
 import { SnippetSelectData } from "@/db/schema";
-import { useSnippetParams } from "../hooks/use-snippet-params";
+import { useInfiniteCursor } from "@/hooks/use-infinite-cursor";
+import { SearchXIcon } from "lucide-react";
 import { useCallback } from "react";
 import { getSnippetsAction } from "../actions/actions";
-import { useInfiniteCursor } from "@/hooks/use-infinite-cursor";
-import { TextState } from "@/components/text-state";
-import { SearchXIcon } from "lucide-react";
-import { ListError, ListLoader, Sentinel } from "@/components/list-components";
+import { useSnippetParams } from "../hooks/use-snippet-params";
+import { SnippetCard } from "./snippet-card";
 
 export const SnippetsList = ({
   initialSnippets,
@@ -42,7 +43,7 @@ export const SnippetsList = ({
       {snippets.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {snippets.map((snippet) => (
-            <div key={snippet.id}>{JSON.stringify(snippet)}</div>
+            <SnippetCard key={snippet.id} snippet={snippet} />
           ))}
         </div>
       ) : (
