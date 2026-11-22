@@ -10,7 +10,10 @@ import {
 } from "../server/snippets";
 import { SnippetsOptionsSchema } from "./schemas";
 import { cacheTag } from "next/cache";
-import { getSnippetsGlobalTag } from "../server/cache/snippets";
+import {
+  getSnippetsGlobalTag,
+  revalidateSnippetsCache,
+} from "../server/cache/snippets";
 
 export const getSnippetAction = async (id: string) => {
   return getExistingSnippet(id);

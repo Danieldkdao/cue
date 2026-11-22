@@ -20,6 +20,7 @@ import {
 } from "../actions/schemas";
 import { PAGE_SIZE } from "@/lib/constants";
 import { normalizeData, writeCursor } from "@/lib/utils";
+import { revalidateSnippetsCache } from "./cache/snippets";
 
 export const getExistingSnippet = (id: string) => {
   if (!isValidId(id)) return null;
@@ -72,7 +73,10 @@ export const getSnippets = (options: SnippetsOptionsSchema) => {
     .select()
     .from(SnippetTable)
     .where(filters)
-    .orderBy(...sortByOption.sortBy)
+    .orderBy(
+      sortByOption.wrapper.sort(SnippetTable.pinned),
+      ...sortByOption.sortBy,
+    )
     .limit(PAGE_SIZE + 1)
     .all();
   const hasNextPage = snippets.length > PAGE_SIZE;
@@ -126,6 +130,8 @@ export const createSnippet = (unsafeData: SnippetSchema) => {
       .get();
     if (!createdSnippet) throw new Error("Failed to create snippet.");
 
+    revalidateSnippetsCache();
+
     return {
       error: false as const,
       message: "Snippet created successfully!",
@@ -175,6 +181,8 @@ export const updateSnippet = (
       .get();
     if (!updatedSnippet) throw new Error("Failed to update snippet.");
 
+    revalidateSnippetsCache();
+
     return {
       error: false as const,
       message: "Snippet updated successfully!",
@@ -207,6 +215,8 @@ export const deleteSnippet = (snippetId: string) => {
       .returning()
       .get();
     if (!deletedSnippet) throw new Error("Failed to delete snippet.");
+
+    revalidateSnippetsCache();
 
     return {
       error: false as const,

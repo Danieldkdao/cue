@@ -1,20 +1,23 @@
+import { KeysOfType } from "@/lib/types";
 import {
   and,
+  AnyColumn,
   asc,
+  BinaryOperator,
   desc,
   eq,
   gt,
-  ilike,
   inArray,
+  like,
   lt,
   or,
   SQL,
   sql,
+  SQLWrapper,
 } from "drizzle-orm";
-import { SnippetSelectData } from "./schema";
-import { db } from "./db";
 import { SQLiteTable } from "drizzle-orm/sqlite-core";
-import { KeysOfType } from "@/lib/types";
+import { db } from "./db";
+import { SnippetSelectData } from "./schema";
 import { GetTableName, TableIdColumn, TableProperty } from "./types";
 
 export const indexSnippet = (s: SnippetSelectData) => {
@@ -38,7 +41,7 @@ export const createSearchFilter = <
   return trimmedSearch
     ? or(
         ...properties.map((property) =>
-          ilike(table[property] as TableProperty, searchTerm),
+          like(table[property] as TableProperty, searchTerm),
         ),
       )
     : undefined;
@@ -100,6 +103,7 @@ export const createSortByMap = <
           sortBy,
           cursorFilter,
           nextCursorField: option.property,
+          wrapper: sqlWrapper,
         },
       ];
     }),
@@ -109,5 +113,9 @@ export const createSortByMap = <
       cursorFilter: SQL<unknown> | undefined;
       sortBy: SQL<unknown>[];
       nextCursorField: SortOptions[number]["property"];
+      wrapper: {
+        sort: (column: SQLWrapper | AnyColumn) => SQL;
+        cursor: BinaryOperator;
+      };
     }
   >;

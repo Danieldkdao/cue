@@ -1,5 +1,6 @@
 import { TextState } from "@/components/text-state";
 import { getSnippetsAction } from "@/features/snippets/actions/actions";
+import { SnippetsFilter } from "@/features/snippets/components/snippets-filters";
 import { SnippetsList } from "@/features/snippets/components/snippets-list";
 import { loadSnippetsSearchParams } from "@/features/snippets/lib/params";
 import { SearchParamsProps } from "@/lib/types";
@@ -45,6 +46,7 @@ const HomeSuspense = async ({ searchParams }: SearchParamsProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
+      <SnippetsFilter />
       <SnippetsList
         initialSnippets={data}
         initialNextCursor={nextCursor}
