@@ -1,4 +1,9 @@
 import { db } from "@/db/db";
+import {
+  createInArrayFilter,
+  createSearchFilter,
+  createSortByMap,
+} from "@/db/helpers";
 import { SnippetTable } from "@/db/schema";
 import {
   partialSnippetSchema,
@@ -7,7 +12,14 @@ import {
   SnippetSchema,
 } from "@cue/shared/schemas";
 import { isValidId } from "@cue/shared/utils";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import {
+  snippetsCursorPaginationSchema,
+  snippetsOptionsSchema,
+  SnippetsOptionsSchema,
+} from "../actions/schemas";
+import { PAGE_SIZE } from "@/lib/constants";
+import { normalizeData, writeCursor } from "@/lib/utils";
 
 export const getExistingSnippet = (id: string) => {
   if (!isValidId(id)) return null;
@@ -15,6 +27,82 @@ export const getExistingSnippet = (id: string) => {
   return (
     db.select().from(SnippetTable).where(eq(SnippetTable.id, id)).get() ?? null
   );
+};
+
+export const getSnippets = (options: SnippetsOptionsSchema) => {
+  const { data: optionsData, success: optionsSuccess } =
+    snippetsOptionsSchema.safeParse(options);
+  if (!optionsSuccess) return null;
+
+  const { search, sortBy, kinds, lastCursor } = optionsData;
+
+  const { data: cursorData, success: cursorSuccess } =
+    snippetsCursorPaginationSchema.safeParse(lastCursor);
+  if (!cursorSuccess) return null;
+
+  const searchFilter = createSearchFilter(SnippetTable, search, [
+    "name",
+    "body",
+    "language",
+    "useCase",
+  ]);
+  const kindFilter = createInArrayFilter(SnippetTable, kinds, "kind");
+  const sortByMap = createSortByMap(SnippetTable, cursorData, [
+    {
+      option: "recently_created",
+      order: "desc",
+      property: "createdAt",
+    },
+    {
+      option: "oldest",
+      order: "asc",
+      property: "createdAt",
+    },
+    {
+      option: "recently_updated",
+      order: "desc",
+      property: "updatedAt",
+    },
+  ]);
+  const sortByOption = sortByMap[sortBy];
+
+  const filters = and(searchFilter, kindFilter, sortByOption.cursorFilter);
+
+  const snippets = db
+    .select()
+    .from(SnippetTable)
+    .where(filters)
+    .orderBy(...sortByOption.sortBy)
+    .limit(PAGE_SIZE + 1)
+    .all();
+  const hasNextPage = snippets.length > PAGE_SIZE;
+
+  const nextCursor = hasNextPage
+    ? writeCursor({
+        id: snippets[PAGE_SIZE - 1].id,
+        marker: normalizeData(
+          snippets[PAGE_SIZE - 1][sortByOption.nextCursorField],
+        ),
+      })
+    : null;
+
+  const snippetsKey = JSON.stringify({
+    snippets: snippets.map((snippet) => ({
+      id: snippet.id,
+      updated: snippet.updatedAt.toISOString(),
+    })),
+    filters: {
+      search,
+      sortBy,
+      kinds,
+    },
+  });
+
+  return {
+    data: snippets.slice(0, PAGE_SIZE),
+    nextCursor,
+    key: snippetsKey,
+  };
 };
 
 export const createSnippet = (unsafeData: SnippetSchema) => {
