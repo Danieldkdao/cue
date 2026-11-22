@@ -1,7 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { SnippetDialog } from "@/features/snippets/components/snippet-dialog";
+import { TextState } from "@/components/text-state";
+import { getSnippetsAction } from "@/features/snippets/actions/actions";
+import { SnippetsList } from "@/features/snippets/components/snippets-list";
+import { loadSnippetsSearchParams } from "@/features/snippets/lib/params";
+import { SearchParamsProps } from "@/lib/types";
+import { Suspense } from "react";
 
-export default function Home() {
+const Home = (props: SearchParamsProps) => {
   return (
     <div className="w-full max-w-7xl mx-auto p-5">
       <div className="w-full flex flex-col gap-2 items-center mt-20">
@@ -10,9 +14,44 @@ export default function Home() {
           View, manage, sort, and search through your snippets.
         </p>
       </div>
-      <SnippetDialog>
-        <Button>Add Snippet</Button>
-      </SnippetDialog>
+      <Suspense fallback={<HomeLoading />}>
+        <HomeSuspense {...props} />
+      </Suspense>
     </div>
   );
-}
+};
+
+const HomeLoading = () => {
+  return <div>loading</div>;
+};
+
+const HomeSuspense = async ({ searchParams }: SearchParamsProps) => {
+  const options = await loadSnippetsSearchParams(searchParams);
+  const response = await getSnippetsAction(options);
+  if (!response) {
+    return (
+      <TextState
+        error
+        title="Something went wrong"
+        description="We were unable to load your snippets. Try refreshing the page or come back later if the issue persists."
+        classNames={{
+          title: "text-xl",
+        }}
+      />
+    );
+  }
+
+  const { data, nextCursor, key } = response;
+
+  return (
+    <div className="w-full flex flex-col gap-4">
+      <SnippetsList
+        initialSnippets={data}
+        initialNextCursor={nextCursor}
+        key={key}
+      />
+    </div>
+  );
+};
+
+export default Home;
