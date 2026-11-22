@@ -44,7 +44,7 @@ export const getSnippets = (options: SnippetsOptionsSchema) => {
   const searchFilter = createSearchFilter(SnippetTable, search, [
     "name",
     "body",
-    "language",
+    "technology",
     "useCase",
   ]);
   const kindFilter = createInArrayFilter(SnippetTable, kinds, "kind");

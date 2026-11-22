@@ -8,7 +8,7 @@ export const SnippetTable = sqliteTable("snippets", {
   kind: text("kind", { enum: snippetKinds }).notNull(),
   name: text("name").notNull(),
   body: text("body").notNull(),
-  language: text("language"),
+  technology: text("technology"),
   useCase: text("use_case").notNull().default(""),
   tags: text("tags", { mode: "json" }).$type<string[]>().notNull().default([]),
   pinned: integer("pinned", { mode: "boolean" }).notNull().default(false),

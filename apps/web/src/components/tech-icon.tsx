@@ -4,7 +4,7 @@ import { CodeIcon } from "lucide-react";
 type OriginalName = keyof typeof Original;
 export const originalNames = Object.keys(Original) as OriginalName[];
 
-export const LanguageIcon = ({
+export const TechIcon = ({
   name,
   size,
 }: {

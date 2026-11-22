@@ -1,6 +1,6 @@
 "use client";
 
-import { LanguageIcon, originalNames } from "@/components/language-icon";
+import { TechIcon, originalNames } from "@/components/tech-icon";
 import {
   Combobox,
   ComboboxContent,
@@ -75,7 +75,7 @@ export const SnippetForm = ({
           name: "",
           body: "",
           kind: "code",
-          language: "",
+          technology: "",
           useCase: "",
           tags: [],
           pinned: false,
@@ -192,10 +192,10 @@ export const SnippetForm = ({
       />
       <Controller
         control={form.control}
-        name="language"
+        name="technology"
         render={({ field: { value, onChange, ...props }, fieldState }) => (
           <Field data-invalid={!!fieldState.error}>
-            <FieldLabel htmlFor="snippet-language">Language</FieldLabel>
+            <FieldLabel htmlFor="snippet-technology">Technology</FieldLabel>
             <FieldContent>
               <Combobox
                 items={originalNames}
@@ -205,13 +205,13 @@ export const SnippetForm = ({
                 {...props}
               >
                 <ComboboxInput
-                  id="snippet-language"
-                  placeholder="Enter a language"
+                  id="snippet-technology"
+                  placeholder="Search technologies…"
                   aria-invalid={!!fieldState.error}
                   className="w-full flex-1"
                 >
                   <InputGroupAddon className="mr-1">
-                    <LanguageIcon size={24} name={value ?? ""} />
+                    <TechIcon size={24} name={value ?? ""} />
                   </InputGroupAddon>
                 </ComboboxInput>
                 <ComboboxContent>
@@ -220,7 +220,7 @@ export const SnippetForm = ({
                     {(item) => (
                       <ComboboxItem key={item} value={item}>
                         <div className="flex items-center gap-2">
-                          <LanguageIcon size={24} name={item} />
+                          <TechIcon size={24} name={item} />
                           <span>{item}</span>
                         </div>
                       </ComboboxItem>

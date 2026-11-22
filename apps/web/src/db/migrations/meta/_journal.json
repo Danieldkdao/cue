@@ -8,6 +8,13 @@
       "when": 1795340824903,
       "tag": "0000_aberrant_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795380707055,
+      "tag": "0001_rename_language_to_technology",
+      "breakpoints": true
     }
   ]
 }
