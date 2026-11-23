@@ -5,7 +5,7 @@ export const snippetSchema = z.object({
   kind: z.enum(snippetKinds),
   name: z.string().trim().min(1, { error: "Please enter a name." }),
   body: z.string().trim().min(1, { error: "Please enter a snippet/prompt." }),
-  technology: z.string().nullish(),
+  language: z.string().nullish(),
   useCase: z.string().trim().nullish(),
   tags: z.array(z.string()),
   pinned: z.boolean(),

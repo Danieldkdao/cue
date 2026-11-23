@@ -15,6 +15,13 @@
       "when": 1795380707055,
       "tag": "0001_rename_language_to_technology",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795403690459,
+      "tag": "0002_plain_shriek",
+      "breakpoints": true
     }
   ]
 }

@@ -4,16 +4,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SnippetSelectData } from "@/db/schema";
 import { cn } from "cn";
 import { EditIcon, EllipsisIcon, PinIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 import { useDeleteSnippet } from "../hooks/use-delete-snippet";
 import { useUpdateSnippet } from "../hooks/use-update-snippet";
 
 export const SnippetActions = ({ snippet }: { snippet: SnippetSelectData }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { openUpdate, UpdateDialog, isUpdatePending, handleUpdate } =
     useUpdateSnippet(snippet);
   const { handleDeletion, isDeletionPending, DeletionConfirmationDialog } =
@@ -25,15 +24,15 @@ export const SnippetActions = ({ snippet }: { snippet: SnippetSelectData }) => {
     <>
       {UpdateDialog}
       {DeletionConfirmationDialog}
-      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-        <button
-          className="relative cursor-pointer group"
-          onClick={() => setDropdownOpen(true)}
-        >
-          <div className="absolute -inset-2.5 rounded-xl cursor-pointer group-hover:bg-background/50" />
-          <EllipsisIcon className="relative z-100 size-4 shrink-0" />
-        </button>
-
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <button className="relative cursor-pointer group">
+              <span className="absolute -inset-2.5 rounded-xl cursor-pointer group-hover:bg-background/50" />
+              <EllipsisIcon className="relative z-100 size-4 shrink-0" />
+            </button>
+          }
+        />
         <DropdownMenuContent align="end">
           <DropdownMenuItem disabled={disabled} onClick={openUpdate}>
             <EditIcon />

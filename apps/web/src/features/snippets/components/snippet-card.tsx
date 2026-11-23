@@ -1,16 +1,17 @@
-import { TechIcon } from "@/components/tech-icon";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SnippetSelectData } from "@/db/schema";
-import { cn } from "cn";
+import { wrapCode } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import { DotIcon, PinIcon } from "lucide-react";
+import { PinIcon } from "lucide-react";
 import { formatSnippetKind } from "../lib/formatters";
 import { SnippetActions } from "./snippet-actions";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export const SnippetCard = ({ snippet }: { snippet: SnippetSelectData }) => {
   const { label: kindLabel, icon: KindIcon } = formatSnippetKind(snippet.kind);
+  const isCode = snippet.kind === "code";
 
   return (
     <Card className="h-full">
@@ -34,19 +35,14 @@ export const SnippetCard = ({ snippet }: { snippet: SnippetSelectData }) => {
             <KindIcon className="size-4" />
             {kindLabel}
           </span>
-          {snippet.technology && (
-            <>
-              <DotIcon className="size-4 text-muted-foreground" />
-              <span className="flex items-center gap-1.5">
-                <TechIcon size={16} name={snippet.technology} />
-                {snippet.technology}
-              </span>
-            </>
-          )}
         </div>
-        <p className={cn("text-base text-muted-foreground line-clamp-2")}>
-          {snippet.body}
-        </p>
+        <div className="h-20 overflow-hidden p-4 rounded-xl bg-background/50">
+          <div className="zoom-50">
+            <MarkdownRenderer>
+              {isCode ? wrapCode(snippet.body, snippet.language) : snippet.body}
+            </MarkdownRenderer>
+          </div>
+        </div>
         {snippet.useCase && (
           <p className="text-base text-muted-foreground line-clamp">
             <span className="font-medium text-foreground/70">Use case:</span>{" "}

@@ -1,17 +1,11 @@
 "use client";
 
-import { TechIcon, originalNames } from "@/components/tech-icon";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
@@ -20,7 +14,9 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  InputGroupTextarea,
 } from "@/components/ui/input-group";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 import {
   Select,
   SelectContent,
@@ -30,9 +26,14 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
+import { SnippetSelectData } from "@/db/schema";
 import { snippetKinds } from "@cue/shared";
-import { snippetSchema, SnippetSchema } from "@cue/shared/schemas";
+import { snippetSchema } from "@cue/shared/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Controller,
   useFieldArray,
@@ -40,15 +41,8 @@ import {
   useFormState,
 } from "react-hook-form";
 import z from "zod";
-import { formatSnippetKind } from "../lib/formatters";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { LoadingSwap } from "@/components/ui/loading-swap";
 import { createSnippetAction, updateSnippetAction } from "../actions/actions";
-import { SnippetSelectData } from "@/db/schema";
-import { toast } from "@/components/ui/toast";
-import { useRouter } from "next/navigation";
+import { formatSnippetKind } from "../lib/formatters";
 
 const formSnippetSchema = snippetSchema.extend({
   tags: z.array(z.object({ name: z.string().min(1) })),
@@ -75,7 +69,7 @@ export const SnippetForm = ({
           name: "",
           body: "",
           kind: "code",
-          technology: "",
+          language: "",
           useCase: "",
           tags: [],
           pinned: false,
@@ -110,6 +104,8 @@ export const SnippetForm = ({
     }
   };
 
+  const kindValue = form.watch("kind");
+
   return (
     <form
       onSubmit={form.handleSubmit(handleSubmit)}
@@ -140,13 +136,42 @@ export const SnippetForm = ({
           <Field data-invalid={!!fieldState.error}>
             <FieldLabel htmlFor="snippet-body">Body</FieldLabel>
             <FieldContent>
-              <Textarea
-                id="snippet-body"
-                placeholder="Snippet/prompt goes here..."
-                aria-invalid={!!fieldState.error}
-                {...field}
-              />
+              <InputGroup>
+                {kindValue === "code" && (
+                  <Controller
+                    control={form.control}
+                    name="language"
+                    render={({ field: { value, ...props }, fieldState }) => (
+                      <Field data-invalid={!!fieldState.error}>
+                        <InputGroup className="border-none has-[[data-slot=input-group-control]:focus-visible]:ring-0 shadow-none">
+                          <InputGroupAddon>```</InputGroupAddon>
+                          <InputGroupInput
+                            placeholder="Enter language here..."
+                            className="shadow-none focus-visible:ring-0 border-none!"
+                            aria-invalid={!!fieldState.error}
+                            value={value ?? ""}
+                            {...props}
+                          />
+                        </InputGroup>
+                      </Field>
+                    )}
+                  />
+                )}
+                <InputGroupTextarea
+                  id="snippet-body"
+                  placeholder="Snippet/prompt goes here..."
+                  aria-invalid={!!fieldState.error}
+                  className="scrollbar-none"
+                  {...field}
+                />
+                {kindValue === "code" && (
+                  <InputGroupAddon align="block-end">```</InputGroupAddon>
+                )}
+              </InputGroup>
             </FieldContent>
+            <FieldDescription>
+              Code supports syntax highlighting. Prompt supports markdown.
+            </FieldDescription>
             {fieldState.error && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
@@ -154,21 +179,23 @@ export const SnippetForm = ({
       <Controller
         control={form.control}
         name="kind"
-        render={({ field: { onChange, ...props }, fieldState }) => {
-          const { label, icon: Icon } = formatSnippetKind(props.value);
+        render={({ field: { value, onChange }, fieldState }) => {
+          const { label, icon: Icon } = formatSnippetKind(value);
           return (
             <Field data-invalid={!!fieldState.error}>
               <FieldLabel htmlFor="snippet-kind">Kind</FieldLabel>
               <FieldContent>
-                <Select onValueChange={onChange} {...props}>
+                <Select value={value} onValueChange={onChange}>
                   <SelectTrigger
                     id="snippet-kind"
                     aria-invalid={!!fieldState.error}
-                    className="w-full"
+                    className="w-full cursor-pointer"
                   >
                     <SelectValue placeholder="Select a kind">
-                      <Icon />
-                      <span>{label}</span>
+                      <div className="flex items-center gap-2">
+                        <Icon />
+                        <span>{label}</span>
+                      </div>
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -189,49 +216,6 @@ export const SnippetForm = ({
             </Field>
           );
         }}
-      />
-      <Controller
-        control={form.control}
-        name="technology"
-        render={({ field: { value, onChange, ...props }, fieldState }) => (
-          <Field data-invalid={!!fieldState.error}>
-            <FieldLabel htmlFor="snippet-technology">Technology</FieldLabel>
-            <FieldContent>
-              <Combobox
-                items={originalNames}
-                autoHighlight
-                value={value}
-                onValueChange={onChange}
-                {...props}
-              >
-                <ComboboxInput
-                  id="snippet-technology"
-                  placeholder="Search technologies…"
-                  aria-invalid={!!fieldState.error}
-                  className="w-full flex-1"
-                >
-                  <InputGroupAddon className="mr-1">
-                    <TechIcon size={24} name={value ?? ""} />
-                  </InputGroupAddon>
-                </ComboboxInput>
-                <ComboboxContent>
-                  <ComboboxEmpty>No items found.</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item} value={item}>
-                        <div className="flex items-center gap-2">
-                          <TechIcon size={24} name={item} />
-                          <span>{item}</span>
-                        </div>
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-            </FieldContent>
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
       />
       <Controller
         control={form.control}
@@ -288,9 +272,15 @@ export const SnippetForm = ({
               <InputGroup>
                 {fields.length > 0 && (
                   <div className="flex items-center gap-1 ml-2">
-                    {fields.map((field) => (
+                    {fields.map((field, index) => (
                       <Badge variant="outline" key={field.id}>
                         {field.name}
+                        <button
+                          className="cursor-pointer"
+                          onClick={() => remove(index)}
+                        >
+                          <XIcon className="size-3 text-destructive" />
+                        </button>
                       </Badge>
                     ))}
                   </div>
@@ -300,10 +290,23 @@ export const SnippetForm = ({
                   placeholder={fields.length > 0 ? "" : "Enter a tag"}
                   aria-invalid={!!fieldState.error}
                   value={currentTagValue}
-                  onChange={(e) => setCurrentTagValue(e.target.value)}
+                  onChange={(e) => {
+                    form.clearErrors("tags");
+                    setCurrentTagValue(e.target.value);
+                  }}
                   onKeyDown={(e) => {
                     if (currentTagValue.trim() && e.key === "Enter") {
                       e.preventDefault();
+                      const currentValue = currentTagValue.trim();
+                      const existingValue = fields.find(
+                        (field) => field.name === currentValue,
+                      );
+                      if (existingValue) {
+                        form.setError("tags", {
+                          message: `"${currentValue}" has already been added.`,
+                        });
+                        return;
+                      }
                       append({ name: currentTagValue.trim() });
                       setCurrentTagValue("");
                     }

@@ -13,3 +13,6 @@ export const normalizeData = (data: unknown) => {
 
   return data;
 };
+
+export const wrapCode = (code: string, language?: string | null) =>
+  `${"```"}${language ? language : ""}${"\n"}${code}${"\n```"}`;
