@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1795340824903,
+      "tag": "0000_aberrant_thunderbolt_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795380707055,
+      "tag": "0001_rename_language_to_technology",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795403690459,
+      "tag": "0002_plain_shriek",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1795410458687,
+      "tag": "0003_productive_jack_flag",
+      "breakpoints": true
+    }
+  ]
+}
