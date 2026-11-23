@@ -30,7 +30,7 @@ export const SnippetsFilter = () => {
       <SearchInput
         initialValue={options.search}
         onSearch={(search) => setOptions({ search })}
-        placeholder="Search by snippet name, body, technology, or use case"
+        placeholder="Search by snippet name, body, language, or use case"
       />
       <Popover>
         <PopoverTrigger
