@@ -5,9 +5,11 @@ import { PartialSnippetSchema } from "@cue/shared/schemas";
 import { updateSnippetAction } from "../actions/actions";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
+import { useVersionStore } from "@/store/use-version-store";
 
 export const useUpdateSnippet = (snippet: SnippetSelectData) => {
   const router = useRouter();
+  const bump = useVersionStore((s) => s.bump);
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -23,6 +25,7 @@ export const useUpdateSnippet = (snippet: SnippetSelectData) => {
         title: response.message,
       });
       if (!response.error) {
+        bump("snippets");
         router.refresh();
       }
     });

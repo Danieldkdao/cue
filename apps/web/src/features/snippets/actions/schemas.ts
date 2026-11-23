@@ -10,6 +10,7 @@ export const snippetsCursorPaginationSchema = createCursorPaginationSchema(
   z.object({
     id: z.uuid(),
     marker: z.union([isoTimestampSchema]),
+    pinned: z.literal([0, 1]),
   }),
 );
 

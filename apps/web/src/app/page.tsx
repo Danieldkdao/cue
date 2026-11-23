@@ -2,6 +2,7 @@ import { TextState } from "@/components/text-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSnippetsAction } from "@/features/snippets/actions/actions";
 import { SnippetCardSkeleton } from "@/features/snippets/components/snippet-card";
+import { SnippetsClientList } from "@/features/snippets/components/snippets-client-list";
 import { SnippetsFilter } from "@/features/snippets/components/snippets-filters";
 import { SnippetsList } from "@/features/snippets/components/snippets-list";
 import { loadSnippetsSearchParams } from "@/features/snippets/lib/params";
@@ -62,10 +63,10 @@ const HomeSuspense = async ({ searchParams }: SearchParamsProps) => {
   return (
     <div className="w-full flex flex-col gap-4">
       <SnippetsFilter />
-      <SnippetsList
+      <SnippetsClientList
         initialSnippets={data}
         initialNextCursor={nextCursor}
-        key={key}
+        serverKey={key}
       />
     </div>
   );

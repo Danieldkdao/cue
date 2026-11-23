@@ -3,9 +3,11 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { deleteSnippetAction } from "../actions/actions";
+import { useVersionStore } from "@/store/use-version-store";
 
 export const useDeleteSnippet = (snippetId: string) => {
   const router = useRouter();
+  const bump = useVersionStore((s) => s.bump);
   const [isPending, startTransition] = useTransition();
   const { confirm, ConfirmationDialog } = useConfirm(
     "Confirm Deletion",
@@ -23,6 +25,7 @@ export const useDeleteSnippet = (snippetId: string) => {
         title: response.message,
       });
       if (!response.error) {
+        bump("snippets");
         router.refresh();
       }
     });

@@ -5,6 +5,8 @@ import {
   createSortByMap,
 } from "@/db/helpers";
 import { SnippetTable } from "@/db/schema";
+import { PAGE_SIZE } from "@/lib/constants";
+import { normalizeData, writeCursor } from "@/lib/utils";
 import {
   partialSnippetSchema,
   PartialSnippetSchema,
@@ -12,14 +14,12 @@ import {
   SnippetSchema,
 } from "@cue/shared/schemas";
 import { isValidId } from "@cue/shared/utils";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import {
   snippetsCursorPaginationSchema,
   snippetsOptionsSchema,
   SnippetsOptionsSchema,
 } from "../actions/schemas";
-import { PAGE_SIZE } from "@/lib/constants";
-import { normalizeData, writeCursor } from "@/lib/utils";
 import { revalidateSnippetsCache } from "./cache/snippets";
 
 export const getExistingSnippet = (id: string) => {
@@ -44,7 +44,7 @@ export const getSnippets = (options: SnippetsOptionsSchema) => {
   const searchFilter = createSearchFilter(SnippetTable, search, [
     "name",
     "body",
-    "technology",
+    "language",
     "useCase",
   ]);
   const kindFilter = createInArrayFilter(SnippetTable, kinds, "kind");
@@ -73,10 +73,7 @@ export const getSnippets = (options: SnippetsOptionsSchema) => {
     .select()
     .from(SnippetTable)
     .where(filters)
-    .orderBy(
-      sortByOption.wrapper.sort(SnippetTable.pinned),
-      ...sortByOption.sortBy,
-    )
+    .orderBy(desc(SnippetTable.pinned), ...sortByOption.sortBy)
     .limit(PAGE_SIZE + 1)
     .all();
   const hasNextPage = snippets.length > PAGE_SIZE;
@@ -87,6 +84,7 @@ export const getSnippets = (options: SnippetsOptionsSchema) => {
         marker: normalizeData(
           snippets[PAGE_SIZE - 1][sortByOption.nextCursorField],
         ),
+        pinned: snippets[PAGE_SIZE - 1].pinned ? 1 : 0,
       })
     : null;
 
@@ -174,7 +172,7 @@ export const updateSnippet = (
       .update(SnippetTable)
       .set({
         ...data,
-        useCase: data.useCase ?? "",
+        ...(data.useCase !== undefined ? { useCase: data.useCase ?? "" } : {}),
       })
       .where(eq(SnippetTable.id, existingSnippet.id))
       .returning()

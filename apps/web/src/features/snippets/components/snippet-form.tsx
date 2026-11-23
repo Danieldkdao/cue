@@ -43,6 +43,7 @@ import {
 import z from "zod";
 import { createSnippetAction, updateSnippetAction } from "../actions/actions";
 import { formatSnippetKind } from "../lib/formatters";
+import { useVersionStore } from "@/store/use-version-store";
 
 const formSnippetSchema = snippetSchema.extend({
   tags: z.array(z.object({ name: z.string().min(1) })),
@@ -56,6 +57,7 @@ export const SnippetForm = ({
   existingSnippet?: SnippetSelectData;
   afterAction?: () => void;
 }) => {
+  const bump = useVersionStore((s) => s.bump);
   const router = useRouter();
   const [currentTagValue, setCurrentTagValue] = useState("");
   const form = useForm<FormSnippetSchema>({
@@ -99,6 +101,7 @@ export const SnippetForm = ({
       title: response.message,
     });
     if (!response.error) {
+      bump("snippets");
       router.refresh();
       afterAction?.();
     }
@@ -276,6 +279,7 @@ export const SnippetForm = ({
                       <Badge variant="outline" key={field.id}>
                         {field.name}
                         <button
+                          type="button"
                           className="cursor-pointer"
                           onClick={() => remove(index)}
                         >

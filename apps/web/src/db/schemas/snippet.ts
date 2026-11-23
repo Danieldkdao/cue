@@ -9,7 +9,7 @@ export const SnippetTable = sqliteTable("snippets", {
   name: text("name").notNull(),
   body: text("body").notNull(),
   language: text("language"),
-  useCase: text("use_case").notNull().default(""),
+  useCase: text("use_case").default(""),
   tags: text("tags", { mode: "json" }).$type<string[]>().notNull().default([]),
   pinned: integer("pinned", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" })

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 type CursorPage<T> = { data: T[]; nextCursor: string | null };
 
@@ -18,10 +18,15 @@ export const useInfiniteCursor = <T>(
 
   const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
   const [sentinelEl, setSentinelEl] = useState<HTMLDivElement | null>(null);
-  const [items, setItems] = useState(initialItems);
+  const [extraPages, setExtraPages] = useState<T[][]>([]);
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const items = useMemo(
+    () => [...initialItems, ...extraPages.flat()],
+    [initialItems, extraPages],
+  );
 
   useEffect(() => {
     if (!sentinelEl || isPending || !nextCursor || !enabled || error) return;
@@ -39,7 +44,7 @@ export const useInfiniteCursor = <T>(
             if (!response) throw new Error("Failed to load more items.");
 
             const { nextCursor: resNextCursor, data } = response;
-            setItems((prev) => [...prev, ...data]);
+            setExtraPages((prev) => [...prev, data]);
             setNextCursor(resNextCursor);
           } catch (error) {
             setError(
