@@ -10,8 +10,15 @@ import { snippetSchema } from "@cue/shared/schemas";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (request: NextRequest) => {
-  const searchParams = Object.fromEntries(request.nextUrl.searchParams);
-  const { data, success } = snippetsOptionsSchema.safeParse(searchParams);
+  const { searchParams } = request.nextUrl;
+  const kinds = searchParams.getAll("kinds");
+
+  const rawOptions = {
+    ...Object.fromEntries(searchParams.entries()),
+    ...(kinds.length ? { kinds } : {}),
+  };
+
+  const { data, success } = snippetsOptionsSchema.safeParse(rawOptions);
   if (!success) {
     return NextResponse.json(
       { error: true, message: "Invalid data." },
