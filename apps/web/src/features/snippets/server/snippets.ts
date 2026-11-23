@@ -134,6 +134,7 @@ export const createSnippet = (unsafeData: SnippetSchema) => {
       error: false as const,
       message: "Snippet created successfully!",
       data: createdSnippet,
+      status: 201,
     };
   } catch (error) {
     console.error(error);
@@ -185,6 +186,7 @@ export const updateSnippet = (
       error: false as const,
       message: "Snippet updated successfully!",
       data: updatedSnippet,
+      status: 200,
     };
   } catch (error) {
     console.error(error);
@@ -220,6 +222,7 @@ export const deleteSnippet = (snippetId: string) => {
       error: false as const,
       message: "Snippet deleted successfully!",
       data: deletedSnippet,
+      status: 200,
     };
   } catch (error) {
     console.error(error);
