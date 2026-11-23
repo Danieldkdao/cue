@@ -1,4 +1,6 @@
+import { CopyButton } from "@/components/copy-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { PinIcon } from "lucide-react";
 import { formatSnippetKind } from "../lib/formatters";
 import { SnippetActions } from "./snippet-actions";
+import { SnippetInfoDialog } from "./snippet-info-dialog";
 
 export const SnippetCard = ({ snippet }: { snippet: SnippetSelectData }) => {
   const { label: kindLabel, icon: KindIcon } = formatSnippetKind(snippet.kind);
@@ -24,9 +27,11 @@ export const SnippetCard = ({ snippet }: { snippet: SnippetSelectData }) => {
                 aria-label="Pinned"
               />
             )}
-            <h3 className="text-xl font-semibold truncate min-w-0">
-              {snippet.name}
-            </h3>
+            <SnippetInfoDialog snippet={snippet}>
+              <h3 className="text-xl font-semibold truncate min-w-0 cursor-pointer">
+                {snippet.name}
+              </h3>
+            </SnippetInfoDialog>
           </div>
           <SnippetActions snippet={snippet} />
         </div>
@@ -36,13 +41,23 @@ export const SnippetCard = ({ snippet }: { snippet: SnippetSelectData }) => {
             {kindLabel}
           </span>
         </div>
-        <div className="h-20 overflow-hidden p-4 rounded-xl bg-background/50">
-          <div className="zoom-50">
-            <MarkdownRenderer>
-              {isCode ? wrapCode(snippet.body, snippet.language) : snippet.body}
-            </MarkdownRenderer>
-          </div>
-        </div>
+        <CopyButton
+          wrapper
+          className="text-start cursor-pointer"
+          content={snippet.body}
+        >
+          <TooltipWrapper content="Click to copy">
+            <div className="h-20 overflow-hidden p-4 rounded-xl bg-background/50">
+              <div className="zoom-75 md:zoom-50">
+                <MarkdownRenderer>
+                  {isCode
+                    ? wrapCode(snippet.body, snippet.language)
+                    : snippet.body}
+                </MarkdownRenderer>
+              </div>
+            </div>
+          </TooltipWrapper>
+        </CopyButton>
         {snippet.useCase && (
           <p className="text-base text-muted-foreground line-clamp">
             <span className="font-medium text-foreground/70">Use case:</span>{" "}
