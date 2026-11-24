@@ -23,6 +23,9 @@ I built this application because I frequently copy and revisit snippets from my 
 
 Watch this video here to see the demo along with how to get things setup.
 
+
+[Cue V1 Demo & Setup Video](https://www.youtube.com/watch?v=CzIn6G5mFkk)
+
 ## Tech Stack
 
 - Turborepo for easy and fast monorepo development
