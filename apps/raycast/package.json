@@ -3,7 +3,7 @@
   "name": "cue",
   "title": "Cue",
   "description": "Manage the snippets and prompts that you use most often.",
-  "icon": "extension-icon.png",
+  "icon": "logo.png",
   "author": "daniel_dao",
   "platforms": [
     "Windows",
@@ -16,9 +16,15 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
-      "title": "My First Command",
-      "description": "My First Command",
+      "name": "add-snippet",
+      "title": "Add Snippet",
+      "description": "Allows you to create and save a new snippet.",
+      "mode": "view"
+    },
+    {
+      "name": "search-snippets",
+      "title": "Search Snippets",
+      "description": "Search and manage your snippets.",
       "mode": "view"
     }
   ],
