@@ -49,13 +49,14 @@ Follow the installation instructions below or watch the video for a clear step-b
 git clone https://github.com/Danieldkdao/cue.git
 cd cue
 ```
-3. Setup the project with the following commands:
+3. OPTIONAL: You can update the path of the local database. This is optional and a default path is already set to `./data/cue.db`. To update the path, you can create a new `.env` file in the web app and set a `DATABASE_URL` environment variable to the new database path.
+4. Setup the project with the following commands:
 ```bash
 pnpm install
 pnpm db:generate
 pnpm db:migrate
 ```
-4. Run the development server with:
+5. Run the development server with:
 ```bash
 pnpm dev
 ```

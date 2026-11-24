@@ -6,7 +6,7 @@ export const serverEnv = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    DATABASE_URL: z.string().min(1).default("./data/cue.db"),
+    DATABASE_URL: z.string().min(1).startsWith("./").default("./data/cue.db"),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,
